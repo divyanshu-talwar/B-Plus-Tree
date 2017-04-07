@@ -8,8 +8,9 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Vector;
+import java.util.ArrayList;
 
-class BPlusTreeTopDown {
+class BPlusTreeBottomUp {
 
     private static Node tree;
     private static int order;
@@ -17,7 +18,7 @@ class BPlusTreeTopDown {
     public static int height;
     public static int nodes;
     
-    private BPlusTreeTopDown(int x, int y) {
+    private BPlusTreeBottomUp(int x, int y) {
     	order = x;
     	insertions = y;
     	height = 0;
@@ -70,7 +71,7 @@ class BPlusTreeTopDown {
         	int x = Integer.parseInt(in.readLine().trim());
         	int y = Integer.parseInt(in.readLine().trim());
         	
-        	new BPlusTreeTopDown(x,y);
+        	new BPlusTreeBottomUp(x,y);
         	
         } catch (Exception e1) {
             System.err.println("order could not be read");
@@ -79,54 +80,136 @@ class BPlusTreeTopDown {
     }
     
     public static void main(String[] args) throws IOException {
-        long startTime = System.nanoTime();
-        if(args.length > 1) {
-            System.err.println("Syntax error in call sequence, use:\n\tjava BplusTreeTopDown");
-        }
-        else {
             
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             
-            BufferedWriter output = new BufferedWriter( new FileWriter(new File("bplustreetopdown.out")) );            
+            BufferedWriter output = new BufferedWriter( new FileWriter(new File("bplustreeBottomUp.out")) );            
             try {
                 in = new BufferedReader(new InputStreamReader(new FileInputStream("bplustree.inp")));
             } catch (FileNotFoundException e) {
                 System.err.println("Error: specified file not found (defaulting to standard input)");
             }
-            
+            long startTime = System.nanoTime();    
             readorder(in);
+            // System.out.println("read input");
         	
-            int i = 0;
-            while(i < insertions) {
+            int i = 1;
+            int t1 = 0;
+            ArrayList<String> toprint = new ArrayList<String>();
+            String temp = "";
+            String temp2 = " ";
+            ArrayList<ArrayList<Integer>> a = new ArrayList<ArrayList<Integer>>();
+            ArrayList<Integer> b = new ArrayList<Integer> ();
+            ArrayList<Integer> c = new ArrayList<Integer> ();
+            Integer xvalue;
+            while(i <= insertions) {
                 try {
-                	int xvalue = Integer.parseInt(in.readLine().trim());
-                	insertIntoTree(new DataNode(xvalue));
-                	i = i+1;
-                } 
-                catch (IOException e) {
-                    e.printStackTrace();
+                		xvalue = Integer.parseInt(in.readLine().trim());
+                		c.add(xvalue);
+                		temp += xvalue.toString() + " ";
+                		if(i%(order - 1)==0){
+                			temp +=" # ";
+                		}
+                		if(i%(order-1) == 1){
+                		    b.add(xvalue);
+                			temp2 += xvalue.toString() + " ";
+                			LeafNode n = new LeafNode(order);
+                			n.data.add(new DataNode(xvalue));
+                			TreeNode t = new TreeNode(order);
+                			t.data.add(new DataNode(xvalue));
+                			t.pointer.add(n);
+                			n.setParent(t);
+                			t1++;
+                			if(t1%(order-1) == 0){
+                				temp2 += " # ";
+                			}
+                		}
+                		i++;
+                		// System.out.print("just looping");
+                	}
+
+	                catch (IOException e1) {
+	                    e1.printStackTrace();
+	                }
+	                catch (NumberFormatException e2) {
+	                	System.err.println("This type of command requires a integer operand");
+	                    System.out.println("Valid Query-Modes:\n\ti x - insert x into tree\n\ts x - find x in tree\n\tp   - print tree\n\tq   - quit");
+	                }
+	                catch (Exception e3) {
+	                    e3.printStackTrace();
+	                    System.exit(-1);
+	                }
                 }
-                catch (NumberFormatException e) {
-                	System.err.println("This type of command requires a integer operand");
-                    System.out.println("Valid Query-Modes:\n\ti x - insert x into tree\n\ts x - find x in tree\n\tp   - print tree\n\tq   - quit");
+                // System.out.println("done looping " + temp);
+                // System.out.println("temp2" + temp2);
+            	a.add(c);
+            	a.add(b);
+                toprint.add(temp);
+                toprint.add(temp2);
+                int k = 1;
+                height = 2;
+               	// System.out.println("size of c" + a.get(k).size());
+               	// System.out.println("size of b" + a.get(0).size());
+
+                while(a.get(k).size() > order){
+                	// System.out.println("size : " + a.get(k).size());
+                	nodes += a.get(k).size();
+                	height++;
+                    b = new ArrayList<Integer> ();
+                    c = new ArrayList<Integer> ();
+					temp = "";
+					temp2 = "";
+					int j = 1;
+					t1 = 0;
+					c = a.get(k);
+					while(j <= c.size()){
+						xvalue =c.get(j-1);
+//               			temp += xvalue.toString() + " ";
+                		if(j%(order-1)== 1){
+                			temp2 += xvalue.toString() + " ";
+                			b.add(xvalue);
+                			LeafNode n = new LeafNode(order);
+                			n.data.add(new DataNode(xvalue));
+                			TreeNode t = new TreeNode(order);
+                			t.data.add(new DataNode(xvalue));
+                			t.pointer.add(n);
+                			n.setParent(t);
+							t1++;
+                			if(t1%(order-1) == 0){
+                				temp2 += " # ";
+                			}
+                		}
+                		// temp += "# ";
+                		j++;
+					}
+					if(!temp2.equals("")){
+		                // System.out.println("temp2" + temp2);
+						toprint.add(temp2);
+						a.add(b);
+						k++;
+					}
                 }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    System.exit(-1);
+                nodes += a.get(k).size();
+                int l = k;
+                while(l>=0){
+                	// System.out.println("printing");
+            		output.write(toprint.get(l).toString() + System.getProperty("line.separator"));
+            		l--;
                 }
-            }
-            printTree(output);
-			long estimatedTime = System.nanoTime() - startTime;
-            System.out.println("Top-down approach done!");
+	            // ... the code being measured ...    
+				long estimatedTime = System.nanoTime() - startTime;
+            // printTree(output);
+            System.out.println("Bottom-UP approach done!");
             System.out.println("Total number of nodes : " + nodes);
             System.out.println("Height of the tree : " + height);
             System.out.println("Time taken in Bottom-Up insertions " + estimatedTime + "e-09");
             output.close();
             in.close();
             System.exit(0);
-        }
+            
     }
 }
+
 
 abstract class Node {
 	protected Vector<DataNode> data;

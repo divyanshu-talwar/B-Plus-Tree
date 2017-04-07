@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Vector;
 
-class BPlusTreeTopDown {
+class BPlusTreeNormal {
 
     private static Node tree;
     private static int order;
@@ -17,7 +17,7 @@ class BPlusTreeTopDown {
     public static int height;
     public static int nodes;
     
-    private BPlusTreeTopDown(int x, int y) {
+    private BPlusTreeNormal(int x, int y) {
     	order = x;
     	insertions = y;
     	height = 0;
@@ -70,7 +70,7 @@ class BPlusTreeTopDown {
         	int x = Integer.parseInt(in.readLine().trim());
         	int y = Integer.parseInt(in.readLine().trim());
         	
-        	new BPlusTreeTopDown(x,y);
+        	new BPlusTreeNormal(x,y);
         	
         } catch (Exception e1) {
             System.err.println("order could not be read");
@@ -81,15 +81,15 @@ class BPlusTreeTopDown {
     public static void main(String[] args) throws IOException {
         long startTime = System.nanoTime();
         if(args.length > 1) {
-            System.err.println("Syntax error in call sequence, use:\n\tjava BplusTreeTopDown");
+            System.err.println("Syntax error in call sequence, use:\n\tjava BplusTreeNormal");
         }
         else {
             
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             
-            BufferedWriter output = new BufferedWriter( new FileWriter(new File("bplustreetopdown.out")) );            
+            BufferedWriter output = new BufferedWriter( new FileWriter(new File("bplustreeNormal.out")) );            
             try {
-                in = new BufferedReader(new InputStreamReader(new FileInputStream("bplustree.inp")));
+                in = new BufferedReader(new InputStreamReader(new FileInputStream("bplustreeNormal.inp")));
             } catch (FileNotFoundException e) {
                 System.err.println("Error: specified file not found (defaulting to standard input)");
             }
